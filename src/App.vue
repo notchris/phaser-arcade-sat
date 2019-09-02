@@ -1,28 +1,56 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <canvas ref="canvas" :width="width" :height="height"></canvas>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Phaser from 'phaser';
+import MainScene from "./Scene.js";
+import SATPlugin from './phaser-sat';
 
 export default {
   name: 'app',
+  data () {
+    return {
+      width: 0,
+      height: 0
+    }
+  },
+  mounted () {
+    this.resize();
+    let config = {
+        type: Phaser.WEBGL,
+        canvas: this.$refs.canvas,
+        antialias: true,
+        pixelArt: false,
+        width: this.width,
+        height: this.height,
+        backgroundColor: '#222222',
+        plugins: {
+            global: [
+                { key: 'SATPlugin', plugin: SATPlugin, start: true }
+            ]
+        },
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 400 },
+                debug: false
+            }
+        },
+        scene: [MainScene],
+    };
+
+    new Phaser.Game(config);
+  },
+  methods: {
+    resize () {
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+    }
+  },
   components: {
-    HelloWorld
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
